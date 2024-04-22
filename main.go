@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"go-diff-test/diffconstract"
+
+	"github.com/ogios/go-diffcontext/diffconstract"
 
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
