@@ -1,5 +1,13 @@
 # go-diffcontext
 
+<!--toc:start-->
+
+- [go-diffcontext](#go-diffcontext)
+  - [State](#state)
+  - [Available funcs](#available-funcs)
+  - [Example](#example)
+  <!--toc:end-->
+
 > Based on [`sergi/go-diff`](https://github.com/sergi/go-diff)
 
 Transform from
@@ -23,7 +31,9 @@ type DiffLine struct {
 ```
 
 ## State
+
 There were 3 so called `Operation`s in [`sergi/go-diff`](https://github.com/sergi/go-diff) which are:
+
 ```
 const (
 // DiffDelete item represents a delete diff.
@@ -33,11 +43,14 @@ DiffInsert Operation = 1
 // DiffEqual item represents an equal diff.
 DiffEqual Operation = 0
 ```
-But in here we added one more state to clarify ***line change*** and ***slice of content change inside a line***
+
+But in here we added one more state to clarify **_line change_** and **_slice of content change inside a line_**
+
 - if a line is removed or inserted, the `DiffLine` will be marked as `diffmatchpatch.DiffDelete` or `diffmatchpatch.DiffInsert` (package `diffmatchpatch` is from [`sergi/go-diff`](https://github.com/sergi/go-diff))
-- if slice of string in one line changed, the `DiffLine` will be marked as `diffline.DiffChanged` (package `diffline` is from this repo), and both ***line content before change*** and ***line content after change*** are in `DiffLine.Before` and `DiffLine.After`
+- if slice of string in one line changed, the `DiffLine` will be marked as `diffline.DiffChanged` (package `diffline` is from this repo), and both **_line content before change_** and **_line content after change_** are in `DiffLine.Before` and `DiffLine.After`
 
 ## Available funcs
+
 Able to get both content before and after change by `GetBefore` and `GetAfter`
 
 Also able to get mixed diff content with `GetMixed`
@@ -71,6 +84,7 @@ dc.GetMixed():
 ```
 
 ## Example
+
 ```go
 import (
 	"fmt"
@@ -110,4 +124,3 @@ func main() {
 	fmt.Printf("dc.GetMixed(): %v\n", dc.GetMixed())
 }
 ```
-
