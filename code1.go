@@ -38,11 +38,26 @@ const (
 )
 
 func main() {
-
 	diffs := dmp.DiffMain(text1, text2, false)
 
-    dmp := diffmatchpatch.New()
+	dmp := diffmatchpatch.New()
 
 	fmt.Println(dmp.DiffPrettyText(diffs))
 }
 `
+
+// const code1 = `
+// 	dmp := diffmatchpatch.New()
+//
+// 	diffs := dmp.DiffMain(text1, text2, false)
+//
+// 	fmt.Println(dmp.DiffPrettyText(diffs))
+// `
+//
+// const code2 = `
+// 	diffs := dmp.DiffMain(text1, text2, false)
+//
+// 	dmp := diffmatchpatch.New()
+//
+// 	fmt.Println(dmp.DiffPrettyText(diffs))
+// `
