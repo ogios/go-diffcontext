@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	// test()
-	benchMark()
+	test()
+	// benchMark()
 }
 
 func test() {

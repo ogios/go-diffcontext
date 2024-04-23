@@ -22,30 +22,52 @@ type diffData struct {
 
 type DiffConstractor struct {
 	Lines []DiffLine
-	q     []diffData
 }
 
 func New() *DiffConstractor {
-	return &DiffConstractor{
-		q: make([]diffData, 0),
-	}
+	return &DiffConstractor{}
 }
 
 func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
+	q := make([]diffData, 0)
+	resQ := func() {
+		d.Lines = append(d.Lines, resolveQueue(q))
+		q = make([]diffData, 0)
+	}
+	markQ := func() func(t diffmatchpatch.Operation) {
+		state := 0
+		return func(t diffmatchpatch.Operation) {
+			switch t {
+			case diffmatchpatch.DiffEqual:
+				state += 10
+			case diffmatchpatch.DiffInsert:
+				if state < 6 {
+					state += 6
+				}
+			case diffmatchpatch.DiffDelete:
+				if state < 4 {
+					state += 4
+				}
+			}
+			if state >= 10 {
+				resQ()
+			}
+		}
+	}()
 	for i, d2 := range ds {
 		lines := strings.Split(d2.Text, "\n")
 		for i2, l := range lines {
-			if i2 == 0 && len(lines) > 1 && len(d.q) > 0 {
-				d.q = append(d.q, diffData{
+			if i2 == 0 && len(lines) > 1 && len(q) > 0 {
+				q = append(q, diffData{
 					diffState: d2.Type,
 					data:      []byte(l),
 				})
-				d.resolveQueue()
+				markQ(d2.Type)
 			} else if i2 == len(lines)-1 {
 				if l == "" && i != len(ds)-1 {
 					continue
 				}
-				d.q = append(d.q, diffData{
+				q = append(q, diffData{
 					diffState: d2.Type,
 					data:      []byte(l),
 				})
@@ -69,21 +91,21 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 				d.Lines = append(d.Lines, data)
 			}
 		}
-		if i == len(ds)-1 && len(d.q) != 0 {
-			d.resolveQueue()
+		if i == len(ds)-1 && len(q) != 0 {
+			resQ()
 		}
 	}
 }
 
-func (d *DiffConstractor) resolveQueue() {
+func resolveQueue(q []diffData) DiffLine {
 	var before, after bytes.Buffer
-	state := d.q[0].diffState
+	state := q[0].diffState
 	setState := func(s diffmatchpatch.Operation) {
 		if state != s {
 			state = DiffChanged
 		}
 	}
-	for _, dd := range d.q {
+	for _, dd := range q {
 		switch dd.diffState {
 		case diffmatchpatch.DiffEqual:
 			before.Write(dd.data)
@@ -101,8 +123,7 @@ func (d *DiffConstractor) resolveQueue() {
 		After:  after.Bytes(),
 		State:  state,
 	}
-	d.Lines = append(d.Lines, data)
-	d.q = make([]diffData, 0)
+	return data
 }
 
 const (
