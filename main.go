@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/andreyvit/diff"
-	"github.com/ogios/go-diffcontext/diffconstract"
+	"github.com/ogios/go-diffcontext/diffline"
 
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
@@ -23,7 +23,7 @@ func test() {
 	diffs = dmp.DiffCleanupSemantic(diffs)
 	diffs = dmp.DiffCleanupSemantic(diffs)
 
-	dc := diffconstract.New()
+	dc := diffline.New()
 	dc.AddDiffs(diffs)
 	fmt.Printf("dc.Lines: %v\n", dc.Lines)
 	fmt.Printf("dc.GetBefore(): %v\n", dc.GetBefore())
@@ -42,7 +42,7 @@ func benchMark() {
 		diffs := dmp.DiffMain(code1, code2, true)
 		diffs = dmp.DiffCleanupSemantic(diffs)
 		diffs = dmp.DiffCleanupSemantic(diffs)
-		dc := diffconstract.New()
+		dc := diffline.New()
 		dc.AddDiffs(diffs)
 		c[i] = dc.GetMixed()
 	}
