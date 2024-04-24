@@ -9,3 +9,8 @@ require (
 	github.com/ogios/go-diffcontext v0.0.0-00010101000000-000000000000
 	github.com/sergi/go-diff v1.3.1
 )
+
+require (
+	github.com/alecthomas/chroma/v2 v2.13.0 // indirect
+	github.com/dlclark/regexp2 v1.11.0 // indirect
+)
