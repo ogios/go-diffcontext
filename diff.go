@@ -16,7 +16,7 @@ type DiffLine struct {
 }
 
 type DiffConstractor struct {
-	Lines []DiffLine
+	Lines []*DiffLine
 }
 
 func New() *DiffConstractor {
@@ -80,7 +80,7 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 				case diffmatchpatch.DiffInsert:
 					a = []byte(l)
 				}
-				c.addLine(DiffLine{
+				c.addLine(&DiffLine{
 					Before: b,
 					After:  a,
 					State:  d2.Type,
@@ -97,7 +97,7 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 	d.Lines = append(d.Lines, c.dLines...)
 }
 
-func resolveQueue(q []diffData) DiffLine {
+func resolveQueue(q []diffData) *DiffLine {
 	var before, after bytes.Buffer
 	state := q[0].diffState
 	setState := func(s diffmatchpatch.Operation) {
@@ -118,7 +118,7 @@ func resolveQueue(q []diffData) DiffLine {
 			after.Write(dd.data)
 		}
 	}
-	data := DiffLine{
+	data := &DiffLine{
 		Before: before.Bytes(),
 		After:  after.Bytes(),
 		State:  state,
@@ -133,7 +133,7 @@ const (
 	INS        = byte('+')
 )
 
-func getBefore(lines []DiffLine, withFront bool) []byte {
+func getBefore(lines []*DiffLine, withFront bool) []byte {
 	var builder bytes.Buffer
 	// var builder strings.Builder
 	for i, dl := range lines {
@@ -155,7 +155,7 @@ func getBefore(lines []DiffLine, withFront bool) []byte {
 	return builder.Bytes()
 }
 
-func getAfter(lines []DiffLine, withFront bool) []byte {
+func getAfter(lines []*DiffLine, withFront bool) []byte {
 	var builder bytes.Buffer
 	// var builder strings.Builder
 	for i, dl := range lines {

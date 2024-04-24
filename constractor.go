@@ -19,14 +19,14 @@ type constractorQ struct {
 
 type constractor struct {
 	qs     [2]*constractorQ // mianly operating on qs[0], qs[1] is just for temprary saving
-	dLines []DiffLine       // lines
+	dLines []*DiffLine      // lines
 	length int              // refers to qs
 	state  int
 }
 
 func newConstractor() constractor {
 	return constractor{
-		dLines: make([]DiffLine, 0),
+		dLines: make([]*DiffLine, 0),
 	}
 }
 
@@ -34,7 +34,7 @@ func (c *constractor) makeNewQ() int {
 	if c.length >= 2 {
 		panic(errors.New("max 2 queue"))
 	}
-	c.dLines = append(c.dLines, DiffLine{})
+	c.dLines = append(c.dLines, &DiffLine{})
 	con := &constractorQ{
 		q:   make([]diffData, 0),
 		pos: len(c.dLines) - 1,
@@ -86,6 +86,6 @@ func (c *constractor) markQ(t diffmatchpatch.Operation) {
 	}
 }
 
-func (c *constractor) addLine(l DiffLine) {
+func (c *constractor) addLine(l *DiffLine) {
 	c.dLines = append(c.dLines, l)
 }
