@@ -20,7 +20,7 @@ func test() {
 
 	diffs := dmp.DiffMain(code1, code2, true)
 	diffs = dmp.DiffCleanupSemantic(diffs)
-	diffs = dmp.DiffCleanupSemantic(diffs)
+	diffs = dmp.DiffCleanupEfficiency(diffs)
 
 	dc := diffcontext.New()
 	dc.AddDiffs(diffs)

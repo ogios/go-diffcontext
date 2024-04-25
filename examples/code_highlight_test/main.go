@@ -6,14 +6,15 @@ import (
 	"strings"
 
 	"github.com/alecthomas/chroma/v2/quick"
-	"github.com/andreyvit/diff"
 	"github.com/ogios/go-diffcontext"
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 func main() {
+	// test()
 	dc := test()
 	matchLine(dc)
+	fmt.Println(dc.GetMixed())
 }
 
 func test() *diffcontext.DiffConstractor {
@@ -25,15 +26,23 @@ func test() *diffcontext.DiffConstractor {
 
 	dc := diffcontext.New()
 	dc.AddDiffs(diffs)
-	fmt.Printf("dc.Lines: %v\n", dc.Lines)
-	fmt.Printf("dc.GetBefore(): %v\n", dc.GetBefore())
-	fmt.Printf("dc.GetAfter(): %v\n", dc.GetAfter())
-	fmt.Printf("dc.GetMixed(): %v\n", dc.GetMixed())
-	fmt.Printf("diff.LineDiff(code1, code2): %v\n", diff.LineDiff(code1, code2))
+	fmt.Println(dmp.DiffPrettyText(diffs))
+	// fmt.Printf("dc.Lines: %v\n", dc.Lines)
+	// fmt.Printf("dc.GetBefore(): %v\n", dc.GetBefore())
+	// fmt.Printf("dc.GetAfter(): %v\n", dc.GetAfter())
+	// fmt.Printf("dc.GetMixed(): %v\n", dc.GetMixed())
+	// fmt.Printf("diff.LineDiff(code1, code2): %v\n", diff.LineDiff(code1, code2))
 	return dc
 }
 
 func matchLine(dc *diffcontext.DiffConstractor) {
+	// defer func() {
+	// 	if err := recover(); err != nil {
+	// 		fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	// 		fmt.Println("matchLine err:", err)
+	// 		fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	// 	}
+	// }()
 	c1 := highlight(code1)
 	linesC1 := strings.Split(c1, "\n")
 	// linesC1 := strings.Split(code1, "\n")
@@ -53,10 +62,11 @@ func matchLine(dc *diffcontext.DiffConstractor) {
 			i1++
 			i2++
 		case diffcontext.DiffChanged:
+			i1 += 1 + strings.Count(string(dl.Before), "\n")
+			i2 += 1 + strings.Count(string(dl.After), "\n")
 			dl.Before, dl.After = be, af
 			// fmt.Println(string(dl.After) == string(af), string(dl.Before) == string(be))
-			i1++
-			i2++
+
 		case diffmatchpatch.DiffInsert:
 			dl.After = af
 			// fmt.Println(string(dl.After) == string(af))
@@ -67,7 +77,6 @@ func matchLine(dc *diffcontext.DiffConstractor) {
 			i1++
 		}
 	}
-	fmt.Println(dc.GetMixed())
 }
 
 func highlight(src string) string {
