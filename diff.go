@@ -99,10 +99,10 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 }
 
 const (
-	LINE_BREAK = byte('\n')
-	EQUAL      = byte(' ')
-	DEL        = byte('-')
-	INS        = byte('+')
+	line_break = byte('\n')
+	equal      = byte(' ')
+	del        = byte('-')
+	ins        = byte('+')
 )
 
 func getBefore(lines []*DiffLine, withFront bool) []byte {
@@ -113,14 +113,14 @@ func getBefore(lines []*DiffLine, withFront bool) []byte {
 		if dl.State != diffmatchpatch.DiffInsert {
 			if withFront {
 				if dl.State != diffmatchpatch.DiffEqual {
-					builder.WriteByte(DEL)
+					builder.WriteByte(del)
 				} else {
-					builder.WriteByte(EQUAL)
+					builder.WriteByte(equal)
 				}
 			}
 			builder.Write(be)
 			if i != len(lines)-1 {
-				builder.WriteByte(LINE_BREAK)
+				builder.WriteByte(line_break)
 			}
 		}
 	}
@@ -135,14 +135,14 @@ func getAfter(lines []*DiffLine, withFront bool) []byte {
 		if dl.State != diffmatchpatch.DiffDelete {
 			if withFront {
 				if dl.State != diffmatchpatch.DiffEqual {
-					builder.WriteByte(INS)
+					builder.WriteByte(ins)
 				} else {
-					builder.WriteByte(EQUAL)
+					builder.WriteByte(equal)
 				}
 			}
 			builder.Write(af)
 			if i != len(lines)-1 {
-				builder.WriteByte(LINE_BREAK)
+				builder.WriteByte(line_break)
 			}
 		}
 	}
@@ -163,10 +163,10 @@ func (d *DiffConstractor) GetMixed() string {
 	for i, dl := range d.Lines {
 		if inChange < 0 {
 			if dl.State == diffmatchpatch.DiffEqual {
-				builder.WriteByte(EQUAL)
+				builder.WriteByte(equal)
 				builder.Write(dl.Before)
 				if i != len(d.Lines)-1 {
-					builder.WriteByte(LINE_BREAK)
+					builder.WriteByte(line_break)
 				}
 			} else {
 				inChange = i
@@ -177,27 +177,27 @@ func (d *DiffConstractor) GetMixed() string {
 				before := getBefore(changes, true)
 				if len(before) > 0 {
 					builder.Write(before)
-					builder.WriteByte(LINE_BREAK)
+					builder.WriteByte(line_break)
 				}
 				after := getAfter(changes, true)
 				if len(after) > 0 {
 					builder.Write(after)
-					builder.WriteByte(LINE_BREAK)
+					builder.WriteByte(line_break)
 				}
-				builder.WriteByte(EQUAL)
+				builder.WriteByte(equal)
 				builder.Write(dl.Before)
 				if i != len(d.Lines)-1 {
-					builder.WriteByte(LINE_BREAK)
+					builder.WriteByte(line_break)
 				}
 				inChange = -1
 			}
 		}
 	}
 	if inChange >= 0 {
-		builder.WriteByte(LINE_BREAK)
+		builder.WriteByte(line_break)
 		changes := d.Lines[inChange:]
 		builder.Write(getBefore(changes, true))
-		builder.WriteByte(LINE_BREAK)
+		builder.WriteByte(line_break)
 		builder.Write(getAfter(changes, true))
 	}
 	return builder.String()

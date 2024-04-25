@@ -61,7 +61,7 @@ func (c *constractor) resQ() {
 	c.length--
 }
 
-var LINE_BREAK_BYTES = []byte{LINE_BREAK}
+var line_break_bytes = []byte{line_break}
 
 func (c *constractor) addQ(d diffData, i int) {
 	c.qs[i].q = append(c.qs[i].q, d)
@@ -95,12 +95,12 @@ func (c *constractor) markQ(t diffmatchpatch.Operation) {
 			copy(newQ, first[:len(first)-1])
 			if c.state-10 == 6 {
 				newQ[len(first)-1] = diffData{
-					data:      LINE_BREAK_BYTES,
+					data:      line_break_bytes,
 					diffState: diffmatchpatch.DiffInsert,
 				}
 			} else {
 				newQ[len(first)-1] = diffData{
-					data:      LINE_BREAK_BYTES,
+					data:      line_break_bytes,
 					diffState: diffmatchpatch.DiffDelete,
 				}
 			}
