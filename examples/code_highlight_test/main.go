@@ -36,13 +36,6 @@ func test() *diffcontext.DiffConstractor {
 }
 
 func matchLine(dc *diffcontext.DiffConstractor) {
-	// defer func() {
-	// 	if err := recover(); err != nil {
-	// 		fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-	// 		fmt.Println("matchLine err:", err)
-	// 		fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-	// 	}
-	// }()
 	c1 := highlight(code1)
 	linesC1 := strings.Split(c1, "\n")
 	// linesC1 := strings.Split(code1, "\n")
@@ -62,11 +55,10 @@ func matchLine(dc *diffcontext.DiffConstractor) {
 			i1++
 			i2++
 		case diffcontext.DiffChanged:
-			i1 += 1 + strings.Count(string(dl.Before), "\n")
-			i2 += 1 + strings.Count(string(dl.After), "\n")
 			dl.Before, dl.After = be, af
 			// fmt.Println(string(dl.After) == string(af), string(dl.Before) == string(be))
-
+			i1++
+			i2++
 		case diffmatchpatch.DiffInsert:
 			dl.After = af
 			// fmt.Println(string(dl.After) == string(af))
