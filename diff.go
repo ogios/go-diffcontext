@@ -108,6 +108,7 @@ func resolveQueue(q []diffData) *DiffLine {
 	for _, dd := range q {
 		switch dd.diffState {
 		case diffmatchpatch.DiffEqual:
+			setState(diffmatchpatch.DiffEqual)
 			before.Write(dd.data)
 			after.Write(dd.data)
 		case diffmatchpatch.DiffDelete:
