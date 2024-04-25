@@ -97,36 +97,6 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 	d.Lines = append(d.Lines, c.dLines...)
 }
 
-func resolveQueue(q []diffData) *DiffLine {
-	var before, after bytes.Buffer
-	state := q[0].diffState
-	setState := func(s diffmatchpatch.Operation) {
-		if state != s {
-			state = DiffChanged
-		}
-	}
-	for _, dd := range q {
-		switch dd.diffState {
-		case diffmatchpatch.DiffEqual:
-			setState(diffmatchpatch.DiffEqual)
-			before.Write(dd.data)
-			after.Write(dd.data)
-		case diffmatchpatch.DiffDelete:
-			setState(diffmatchpatch.DiffDelete)
-			before.Write(dd.data)
-		case diffmatchpatch.DiffInsert:
-			setState(diffmatchpatch.DiffInsert)
-			after.Write(dd.data)
-		}
-	}
-	data := &DiffLine{
-		Before: before.Bytes(),
-		After:  after.Bytes(),
-		State:  state,
-	}
-	return data
-}
-
 const (
 	LINE_BREAK = byte('\n')
 	EQUAL      = byte(' ')
