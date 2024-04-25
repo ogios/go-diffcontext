@@ -61,6 +61,8 @@ func (c *constractor) resQ() {
 	c.length--
 }
 
+var LINE_BREAK_BYTES = []byte{LINE_BREAK}
+
 func (c *constractor) addQ(d diffData, i int) {
 	c.qs[i].q = append(c.qs[i].q, d)
 }
@@ -93,12 +95,12 @@ func (c *constractor) markQ(t diffmatchpatch.Operation) {
 			copy(newQ, first[:len(first)-1])
 			if c.state-10 == 6 {
 				newQ[len(first)-1] = diffData{
-					data:      []byte{LINE_BREAK},
+					data:      LINE_BREAK_BYTES,
 					diffState: diffmatchpatch.DiffInsert,
 				}
 			} else {
 				newQ[len(first)-1] = diffData{
-					data:      []byte{LINE_BREAK},
+					data:      LINE_BREAK_BYTES,
 					diffState: diffmatchpatch.DiffDelete,
 				}
 			}
@@ -126,7 +128,13 @@ func resolveQueue(q []diffData) *DiffLine {
 			state = DiffChanged
 		}
 	}
+	// var lineBreakState diffmatchpatch.Operation
 	for _, dd := range q {
+		// if len(dd.data) > 0 {
+		// 	if dd.data[0] == LINE_BREAK {
+		// 		lineBreakState = dd.diffState
+		// 	}
+		// }
 		switch dd.diffState {
 		case diffmatchpatch.DiffEqual:
 			setState(diffmatchpatch.DiffEqual)
@@ -145,5 +153,10 @@ func resolveQueue(q []diffData) *DiffLine {
 		After:  after.Bytes(),
 		State:  state,
 	}
+	// if lineBreakState == diffmatchpatch.DiffDelete {
+	// 	data.AdditionalSublines[0] = true
+	// } else {
+	// 	data.AdditionalSublines[1] = true
+	// }
 	return data
 }

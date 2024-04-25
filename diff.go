@@ -13,6 +13,7 @@ type DiffLine struct {
 	Before []byte
 	After  []byte
 	State  diffmatchpatch.Operation
+	// AdditionalSublines [2]bool // wether `Before` or `After` have multiple lines. 0-1, 1 means two lines
 }
 
 type DiffConstractor struct {
