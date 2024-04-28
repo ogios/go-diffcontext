@@ -201,7 +201,7 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 		after := getAfter(changes, true)
 		if len(after) > 0 {
 			mixedLines = append(mixedLines, &MixedLine{
-				Data:  before,
+				Data:  after,
 				State: diffmatchpatch.DiffInsert,
 			})
 		}
