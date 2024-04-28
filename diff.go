@@ -100,9 +100,12 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 
 const (
 	line_break = byte('\n')
-	equal      = byte(' ')
-	del        = byte('-')
-	ins        = byte('+')
+)
+
+var (
+	equal = []byte("  ")
+	del   = []byte("- ")
+	ins   = []byte("+ ")
 )
 
 func getBefore(lines []*DiffLine, withFront bool) []byte {
@@ -113,9 +116,9 @@ func getBefore(lines []*DiffLine, withFront bool) []byte {
 		if dl.State != diffmatchpatch.DiffInsert {
 			if withFront {
 				if dl.State != diffmatchpatch.DiffEqual {
-					builder.WriteByte(del)
+					builder.Write(del)
 				} else {
-					builder.WriteByte(equal)
+					builder.Write(equal)
 				}
 			}
 			builder.Write(be)
@@ -135,9 +138,9 @@ func getAfter(lines []*DiffLine, withFront bool) []byte {
 		if dl.State != diffmatchpatch.DiffDelete {
 			if withFront {
 				if dl.State != diffmatchpatch.DiffEqual {
-					builder.WriteByte(ins)
+					builder.Write(ins)
 				} else {
-					builder.WriteByte(equal)
+					builder.Write(equal)
 				}
 			}
 			builder.Write(af)
@@ -163,7 +166,7 @@ func (d *DiffConstractor) GetMixed() string {
 	for i, dl := range d.Lines {
 		if inChange < 0 {
 			if dl.State == diffmatchpatch.DiffEqual {
-				builder.WriteByte(equal)
+				builder.Write(equal)
 				builder.Write(dl.Before)
 				if i != len(d.Lines)-1 {
 					builder.WriteByte(line_break)
@@ -184,7 +187,7 @@ func (d *DiffConstractor) GetMixed() string {
 					builder.Write(after)
 					builder.WriteByte(line_break)
 				}
-				builder.WriteByte(equal)
+				builder.Write(equal)
 				builder.Write(dl.Before)
 				if i != len(d.Lines)-1 {
 					builder.WriteByte(line_break)
