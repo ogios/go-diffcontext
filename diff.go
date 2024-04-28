@@ -192,7 +192,7 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 	mixedLines := make([]*MixedLine, 0)
 	addEqual, finishEqual := func() (func(dl *DiffLine), func()) {
 		maxCap := 1024 << 4
-		buf := new(bytes.Buffer)
+		var buf bytes.Buffer
 		buf.Grow(maxCap)
 		return func(dl *DiffLine) {
 				if buf.Len() > 0 {
@@ -202,12 +202,14 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 				buf.Write(dl.Before)
 			}, func() {
 				if buf.Len() > 0 {
+					bs := make([]byte, buf.Len())
+					copy(bs, buf.Bytes())
 					mixedLines = append(mixedLines, &MixedLine{
-						Data:  buf.Bytes(),
+						Data:  bs,
 						State: diffmatchpatch.DiffEqual,
 					})
 					if buf.Cap() > maxCap {
-						buf = new(bytes.Buffer)
+						buf = bytes.Buffer{}
 						buf.Grow(maxCap)
 					} else {
 						buf.Reset()
