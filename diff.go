@@ -190,7 +190,33 @@ type MixedLine struct {
 
 func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 	mixedLines := make([]*MixedLine, 0)
+	addEqual, finishEqual := func() (func(dl *DiffLine), func()) {
+		maxCap := 1024 << 4
+		buf := new(bytes.Buffer)
+		buf.Grow(maxCap)
+		return func(dl *DiffLine) {
+				if buf.Len() > 0 {
+					buf.WriteByte(line_break)
+				}
+				buf.Write(equal)
+				buf.Write(dl.Before)
+			}, func() {
+				if buf.Len() > 0 {
+					mixedLines = append(mixedLines, &MixedLine{
+						Data:  buf.Bytes(),
+						State: diffmatchpatch.DiffEqual,
+					})
+					if buf.Cap() > maxCap {
+						buf = new(bytes.Buffer)
+						buf.Grow(maxCap)
+					} else {
+						buf.Reset()
+					}
+				}
+			}
+	}()
 	addChanges := func(changes []*DiffLine) {
+		finishEqual()
 		before := getBefore(changes, true)
 		if len(before) > 0 {
 			mixedLines = append(mixedLines, &MixedLine{
@@ -205,15 +231,6 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 				State: diffmatchpatch.DiffInsert,
 			})
 		}
-	}
-	addEqual := func(dl *DiffLine) {
-		var buf bytes.Buffer
-		buf.Write(equal)
-		buf.Write(dl.Before)
-		mixedLines = append(mixedLines, &MixedLine{
-			Data:  buf.Bytes(),
-			State: diffmatchpatch.DiffEqual,
-		})
 	}
 
 	inChange := -1
@@ -235,5 +252,6 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 	if inChange >= 0 {
 		addChanges(d.Lines[inChange:])
 	}
+	finishEqual()
 	return mixedLines
 }
