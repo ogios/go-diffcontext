@@ -161,47 +161,79 @@ func (d *DiffConstractor) GetAfter() string {
 }
 
 func (d *DiffConstractor) GetMixed() string {
-	var builder strings.Builder
+	mixedLines := d.GetMixedLines()
+	if len(mixedLines) == 0 {
+		return ""
+	} else if len(mixedLines) == 1 {
+		return string(mixedLines[0].Data)
+	}
+
+	var b strings.Builder
+	growth := len(mixedLines) - 1
+	for _, ml := range mixedLines {
+		growth += len(ml.Data)
+	}
+
+	b.Grow(growth)
+	b.Write(mixedLines[0].Data)
+	for _, ml := range mixedLines[1:] {
+		b.WriteByte(line_break)
+		b.Write(ml.Data)
+	}
+	return b.String()
+}
+
+type MixedLine struct {
+	Data  []byte
+	State diffmatchpatch.Operation
+}
+
+func (d *DiffConstractor) GetMixedLines() []*MixedLine {
+	mixedLines := make([]*MixedLine, 0)
+	addChanges := func(changes []*DiffLine) {
+		before := getBefore(changes, true)
+		if len(before) > 0 {
+			mixedLines = append(mixedLines, &MixedLine{
+				Data:  before,
+				State: diffmatchpatch.DiffDelete,
+			})
+		}
+		after := getAfter(changes, true)
+		if len(after) > 0 {
+			mixedLines = append(mixedLines, &MixedLine{
+				Data:  before,
+				State: diffmatchpatch.DiffInsert,
+			})
+		}
+	}
+	addEqual := func(dl *DiffLine) {
+		var buf bytes.Buffer
+		buf.Write(equal)
+		buf.Write(dl.Before)
+		mixedLines = append(mixedLines, &MixedLine{
+			Data:  buf.Bytes(),
+			State: diffmatchpatch.DiffEqual,
+		})
+	}
+
 	inChange := -1
 	for i, dl := range d.Lines {
 		if inChange < 0 {
 			if dl.State == diffmatchpatch.DiffEqual {
-				builder.Write(equal)
-				builder.Write(dl.Before)
-				if i != len(d.Lines)-1 {
-					builder.WriteByte(line_break)
-				}
+				addEqual(dl)
 			} else {
 				inChange = i
 			}
 		} else {
 			if dl.State == diffmatchpatch.DiffEqual {
-				changes := d.Lines[inChange:i]
-				before := getBefore(changes, true)
-				if len(before) > 0 {
-					builder.Write(before)
-					builder.WriteByte(line_break)
-				}
-				after := getAfter(changes, true)
-				if len(after) > 0 {
-					builder.Write(after)
-					builder.WriteByte(line_break)
-				}
-				builder.Write(equal)
-				builder.Write(dl.Before)
-				if i != len(d.Lines)-1 {
-					builder.WriteByte(line_break)
-				}
+				addChanges(d.Lines[inChange:i])
+				addEqual(dl)
 				inChange = -1
 			}
 		}
 	}
 	if inChange >= 0 {
-		builder.WriteByte(line_break)
-		changes := d.Lines[inChange:]
-		builder.Write(getBefore(changes, true))
-		builder.WriteByte(line_break)
-		builder.Write(getAfter(changes, true))
+		addChanges(d.Lines[inChange:])
 	}
-	return builder.String()
+	return mixedLines
 }
