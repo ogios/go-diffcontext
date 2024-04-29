@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"slices"
 
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
@@ -89,27 +88,44 @@ func (c *constractor) markQ(t diffmatchpatch.Operation) {
 		c.state = 0
 	} else if c.state > 10 {
 		if c.qs[1] != nil {
-			newQ := make([]diffData, len(c.qs[0].q)+len(c.qs[1].q)+1)
+			// newQ := make([]diffData, len(c.qs[0].q)+len(c.qs[1].q)+1)
+			// first := c.qs[0].q
+			// second := c.qs[1].q
+			// i := len(first) - 1
+			// last := first[i]
+			// copy(newQ, first[:i])
+			// if c.state-10 == 6 {
+			// 	newQ[i] = diffData{
+			// 		data:      line_break_bytes,
+			// 		diffState: diffmatchpatch.DiffInsert,
+			// 	}
+			// } else {
+			// 	newQ[i] = diffData{
+			// 		data:      line_break_bytes,
+			// 		diffState: diffmatchpatch.DiffDelete,
+			// 	}
+			// }
+			// i++
+			// copy(newQ[i:], second)
+			// newQ[len(newQ)-1] = last
+			// c.qs[0].q = newQ
+			// c.dLines = slices.Delete(c.dLines, c.qs[1].pos, c.qs[1].pos+1)
+			// c.qs[1] = nil
+			// c.length--
+			// c.resQ()
+			// c.state = 0
 			first := c.qs[0].q
 			second := c.qs[1].q
-			copy(newQ, first[:len(first)-1])
 			if c.state-10 == 6 {
-				newQ[len(first)-1] = diffData{
-					data:      line_break_bytes,
-					diffState: diffmatchpatch.DiffInsert,
-				}
+				first[len(first)-1].diffState = diffmatchpatch.DiffDelete
 			} else {
-				newQ[len(first)-1] = diffData{
-					data:      line_break_bytes,
-					diffState: diffmatchpatch.DiffDelete,
-				}
+				first[len(first)-1].diffState = diffmatchpatch.DiffInsert
 			}
-			copy(newQ[len(first):], second)
-			newQ[len(newQ)-1] = first[len(first)-1]
-			c.qs[0].q = newQ
-			c.dLines = slices.Delete(c.dLines, c.qs[1].pos, c.qs[1].pos+1)
-			c.qs[1] = nil
-			c.length--
+			c.qs[1].q = append(second, diffData{
+				data:      first[len(first)-1].data,
+				diffState: second[0].diffState,
+			})
+			c.resQ()
 			c.resQ()
 			c.state = 0
 		}
