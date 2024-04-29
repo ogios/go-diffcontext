@@ -111,10 +111,14 @@ var (
 
 func getBefore(lines []*DiffLine, withFront bool) []byte {
 	var builder bytes.Buffer
-	// var builder strings.Builder
-	for i, dl := range lines {
+	getIn := false
+	for _, dl := range lines {
 		be := dl.Before
 		if dl.State != diffmatchpatch.DiffInsert {
+			// every round after first round
+			if getIn {
+				builder.WriteByte(line_break)
+			}
 			if withFront {
 				if dl.State != diffmatchpatch.DiffEqual {
 					builder.Write(del)
@@ -123,8 +127,8 @@ func getBefore(lines []*DiffLine, withFront bool) []byte {
 				}
 			}
 			builder.Write(be)
-			if i != len(lines)-1 {
-				builder.WriteByte(line_break)
+			if !getIn {
+				getIn = true
 			}
 		}
 	}
@@ -133,10 +137,14 @@ func getBefore(lines []*DiffLine, withFront bool) []byte {
 
 func getAfter(lines []*DiffLine, withFront bool) []byte {
 	var builder bytes.Buffer
-	// var builder strings.Builder
-	for i, dl := range lines {
+	getIn := false
+	for _, dl := range lines {
 		af := dl.After
 		if dl.State != diffmatchpatch.DiffDelete {
+			// every round after first round
+			if getIn {
+				builder.WriteByte(line_break)
+			}
 			if withFront {
 				if dl.State != diffmatchpatch.DiffEqual {
 					builder.Write(ins)
@@ -145,8 +153,8 @@ func getAfter(lines []*DiffLine, withFront bool) []byte {
 				}
 			}
 			builder.Write(af)
-			if i != len(lines)-1 {
-				builder.WriteByte(line_break)
+			if !getIn {
+				getIn = true
 			}
 		}
 	}
