@@ -2,6 +2,7 @@ package diffcontext
 
 import (
 	"bytes"
+	"slices"
 	"strings"
 
 	"github.com/sergi/go-diff/diffmatchpatch"
@@ -162,6 +163,10 @@ func (d *DiffConstractor) GetAfter() string {
 
 func (d *DiffConstractor) GetMixed() string {
 	mixedLines := d.GetMixedLines()
+	return JoinMixedLines(mixedLines)
+}
+
+func JoinMixedLines(mixedLines []*MixedLine) string {
 	if len(mixedLines) == 0 {
 		return ""
 	} else if len(mixedLines) == 1 {
@@ -256,4 +261,26 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 	}
 	finishEqual()
 	return mixedLines
+}
+
+var empty_records = make([][3]int, 0)
+
+func (d *DiffConstractor) GetMixedLinesAndStateRecord() ([]*MixedLine, [][3]int) {
+	mls := d.GetMixedLines()
+	if len(mls) == 0 {
+		return mls, empty_records
+	}
+	records := make([][3]int, 0)
+	var n int
+	for _, ml := range mls {
+		length := len(ml.Data) + strings.Count(string(ml.Data), "\t")*(4-1)
+		switch ml.State {
+		case diffmatchpatch.DiffInsert:
+			records = append(records, [3]int{int(diffmatchpatch.DiffInsert), n, n + length})
+		case diffmatchpatch.DiffDelete:
+			records = append(records, [3]int{int(diffmatchpatch.DiffDelete), n, n + length})
+		}
+		n += length + 1
+	}
+	return mls, slices.Clip(records)
 }
