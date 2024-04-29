@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
@@ -125,6 +126,19 @@ func (c *constractor) markQ(t diffmatchpatch.Operation) {
 				data:      first[len(first)-1].data,
 				diffState: second[0].diffState,
 			})
+			c.resQ()
+			c.resQ()
+			c.state = 0
+		} else {
+			first := c.qs[0].q
+			last := first[len(first)-1]
+			if c.state-10 == 6 {
+				last.diffState = diffmatchpatch.DiffInsert
+			} else {
+				last.diffState = diffmatchpatch.DiffDelete
+			}
+			c.addQ(last, c.makeNewQ())
+			c.qs[0].q = slices.Delete(first, len(first)-1, len(first))
 			c.resQ()
 			c.resQ()
 			c.state = 0
