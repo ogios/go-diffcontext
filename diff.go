@@ -188,16 +188,16 @@ func JoinMixedLines(mixedLines []*MixedLine) string {
 	}
 
 	b.Grow(growth)
-	b.Write(mixedLines[0].Data)
+	b.WriteString(mixedLines[0].Data)
 	for _, ml := range mixedLines[1:] {
 		b.WriteByte(line_break)
-		b.Write(ml.Data)
+		b.WriteString(ml.Data)
 	}
 	return b.String()
 }
 
 type MixedLine struct {
-	Data  []byte
+	Data  string
 	State diffmatchpatch.Operation
 }
 
@@ -215,10 +215,10 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 				buf.Write(dl.Before)
 			}, func() {
 				if buf.Len() > 0 {
-					bs := make([]byte, buf.Len())
-					copy(bs, buf.Bytes())
+					// bs := make([]byte, buf.Len())
+					// copy(bs, buf.Bytes())
 					mixedLines = append(mixedLines, &MixedLine{
-						Data:  bs,
+						Data:  buf.String(),
 						State: diffmatchpatch.DiffEqual,
 					})
 					if buf.Cap() > maxCap {
@@ -235,14 +235,14 @@ func (d *DiffConstractor) GetMixedLines() []*MixedLine {
 		before := getBefore(changes, true)
 		if len(before) > 0 {
 			mixedLines = append(mixedLines, &MixedLine{
-				Data:  before,
+				Data:  string(before),
 				State: diffmatchpatch.DiffDelete,
 			})
 		}
 		after := getAfter(changes, true)
 		if len(after) > 0 {
 			mixedLines = append(mixedLines, &MixedLine{
-				Data:  after,
+				Data:  string(after),
 				State: diffmatchpatch.DiffInsert,
 			})
 		}
@@ -281,7 +281,8 @@ func (d *DiffConstractor) GetMixedLinesAndStateRecord() ([]*MixedLine, [][3]int)
 	records := make([][3]int, 0)
 	var n int
 	for _, ml := range mls {
-		length := len(ml.Data) + strings.Count(string(ml.Data), "\t")*(4-1)
+		s := string(ml.Data)
+		length := len([]rune(s)) + strings.Count(s, "\t")*(4-1)
 		switch ml.State {
 		case diffmatchpatch.DiffInsert:
 			records = append(records, [3]int{int(diffmatchpatch.DiffInsert), n, n + length})
