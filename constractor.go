@@ -118,14 +118,18 @@ func (c *constractor) markQ(t diffmatchpatch.Operation) {
 	case diffmatchpatch.DiffInsert:
 		if c.state == 0 || c.state == 4 {
 			c.state += 6
-			c.makeNewQ()
+			if c.qs[1] == nil {
+				c.makeNewQ()
+			}
 		} else {
 			resolveLast()
 		}
 	case diffmatchpatch.DiffDelete:
 		if c.state == 0 || c.state == 6 {
 			c.state += 4
-			c.makeNewQ()
+			if c.qs[1] == nil {
+				c.makeNewQ()
+			}
 		} else {
 			resolveLast()
 		}
