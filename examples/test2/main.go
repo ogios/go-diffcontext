@@ -19,7 +19,7 @@ func test() {
 	code2, _ := os.ReadFile("./code2.txt")
 	// code1, _ := os.ReadFile("./test1")
 	// code2, _ := os.ReadFile("./test2")
-	fmt.Printf("diff.LineDiff(code1, code2): %v\n", diff.LineDiff(string(code1), string(code2)))
+	fmt.Printf("diff.LineDiff(code1, code2):\n%v\n", diff.LineDiff(string(code1), string(code2)))
 
 	diffs := dmp.DiffMain(string(code1), string(code2), true)
 	diffs = dmp.DiffCleanupSemantic(diffs)
@@ -27,8 +27,8 @@ func test() {
 
 	dc := diffcontext.New()
 	dc.AddDiffs(diffs)
-	fmt.Printf("dc.Lines: %v\n", dc.Lines)
-	fmt.Printf("dc.GetBefore(): %v\n", dc.GetBefore())
-	fmt.Printf("dc.GetAfter(): %v\n", dc.GetAfter())
-	fmt.Printf("dc.GetMixed(): %v\n", dc.GetMixed())
+	fmt.Printf("dc.Lines:\n%v\n", dc.Lines)
+	fmt.Printf("dc.GetBefore():\n%v\n", dc.GetBefore())
+	fmt.Printf("dc.GetAfter():\n%v\n", dc.GetAfter())
+	fmt.Printf("dc.GetMixed():\n%v\n", dc.GetMixed())
 }

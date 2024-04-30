@@ -15,8 +15,8 @@ func main() {
 
 func test() {
 	dmp := diffmatchpatch.New()
-	code1, _ := os.ReadFile("./code1.txt")
-	code2, _ := os.ReadFile("./code2.txt")
+	code1, _ := os.ReadFile("./code1")
+	code2, _ := os.ReadFile("./code2")
 	// code1, _ := os.ReadFile("./test1")
 	// code2, _ := os.ReadFile("./test2")
 	fmt.Printf("diff.LineDiff(code1, code2):\n%v\n", diff.LineDiff(string(code1), string(code2)))

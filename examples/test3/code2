@@ -1,0 +1,2 @@
+udiffview.NewDiffViewModel([2]int{
+			getModelWidth(0.4),

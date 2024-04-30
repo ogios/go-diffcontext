@@ -1,0 +1,2 @@
+ms[1].m = uview.NewViewModel(ms[1].block)
+	ms[2].m = udiffview.NewDiffViewModel(ms[2].block)

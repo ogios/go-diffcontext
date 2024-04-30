@@ -25,11 +25,11 @@ func test() *diffcontext.DiffConstractor {
 
 	dc := diffcontext.New()
 	dc.AddDiffs(diffs)
-	fmt.Printf("dc.Lines: %v\n", dc.Lines)
-	fmt.Printf("dc.GetBefore(): %v\n", dc.GetBefore())
-	fmt.Printf("dc.GetAfter(): %v\n", dc.GetAfter())
-	fmt.Printf("dc.GetMixed(): %v\n", dc.GetMixed())
-	fmt.Printf("diff.LineDiff(code1, code2): %v\n", diff.LineDiff(code1, code2))
+	fmt.Printf("dc.Lines:\n%v\n", dc.Lines)
+	fmt.Printf("dc.GetBefore():\n%v\n", dc.GetBefore())
+	fmt.Printf("dc.GetAfter():\n%v\n", dc.GetAfter())
+	fmt.Printf("dc.GetMixed():\n%v\n", dc.GetMixed())
+	fmt.Printf("diff.LineDiff(code1, code2):\n%v\n", diff.LineDiff(code1, code2))
 	return dc
 }
 
