@@ -1,0 +1,1 @@
+newChild([2]int{getModelWidth(0.4), modelsHeight}),

@@ -1,0 +1,4 @@
+github.com/ogios/go-diffcontext v0.2.1 h1:oJhgOvxE8/Z0MXvGX7blrz+ZDWISgnKHex++8egVkEY=
+github.com/ogios/go-diffcontext v0.2.1/go.mod h1:8BEqvapujwB9PMLhVQ/N2Lel7YjkpXvzR357LgYoVxA=
+github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=

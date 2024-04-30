@@ -1,0 +1,4 @@
+utree.NewTreeModel(comp.TREE_NODE, [2]int{
+  getModelWidth(0.2),
+  modelsHeight,
+f}),
