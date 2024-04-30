@@ -42,7 +42,7 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 				c.addQ(diffData{
 					diffState: d2.Type,
 					data:      []byte(l),
-				}, 0)
+				})
 				c.markQ(d2.Type)
 			} else if i2 == len(lines)-1 {
 				// the end of lines(includes line length=1) -- (means) start of the new line but not end
@@ -59,14 +59,10 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 				// now here comes another Diff with DiffInsert + "anything2\n\tsomething2", this also splits into 2 parts: `anything2` & `\tsomething2`
 				// part 1 jumped into `if` judgment and run markQ which set state to 10(4+6), resolve c.qs[0] and move q.cs[1] to q.cs[0]
 				// and part 2 jump into here, now c.qs[0] is not in any state, we need to push part 2 into c.qs[0], not creating another one
-				var index int
-				if (len(lines) > 1 && c.state > 0) || c.length == 0 {
-					index = c.makeNewQ()
-				}
 				c.addQ(diffData{
 					diffState: d2.Type,
 					data:      []byte(l),
-				}, index)
+				})
 
 			} else {
 				// normal Lines
@@ -92,7 +88,7 @@ func (d *DiffConstractor) AddDiffs(ds []diffmatchpatch.Diff) {
 		if i == len(ds)-1 {
 			// the end of content and queue is not empty
 			for c.length > 0 {
-				c.resQ()
+				c.resQ(0)
 			}
 		}
 	}
