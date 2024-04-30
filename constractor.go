@@ -135,7 +135,11 @@ func (c *constractor) markQ(t diffmatchpatch.Operation) {
 		}
 	}
 
-	if c.state >= 10 {
+	if c.state == 10 {
+		c.resQ(0)
+		c.state = 0
+	}
+	if c.state > 10 {
 		for c.length > 0 {
 			c.resQ(0)
 		}
